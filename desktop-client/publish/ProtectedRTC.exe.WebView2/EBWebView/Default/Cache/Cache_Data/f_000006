@@ -1,0 +1,218 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/CallInterface.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=6138c4ef"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=6138c4ef"; const useState = __vite__cjsImport1_react["useState"]; const useEffect = __vite__cjsImport1_react["useEffect"]; const useRef = __vite__cjsImport1_react["useRef"];
+import { WebRTCService } from "/src/services/WebRTCService.ts";
+import VideoTile from "/src/components/VideoTile.tsx";
+import ControlBar from "/src/components/ControlBar.tsx";
+import "/src/components/CallInterface.css";
+function CallInterface({ webrtcService, participants, onLeaveRoom }) {
+  _s();
+  const [localStream, setLocalStream] = useState(null);
+  const [isMicEnabled, setIsMicEnabled] = useState(true);
+  const [isCameraEnabled, setIsCameraEnabled] = useState(true);
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
+  const [error, setError] = useState(null);
+  const screenStreamRef = useRef(null);
+  useEffect(() => {
+    startMediaDevices();
+    return () => {
+      if (localStream) {
+        localStream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, []);
+  const startMediaDevices = async () => {
+    try {
+      const stream = await webrtcService.startCamera();
+      setLocalStream(stream);
+      setError(null);
+    } catch (err) {
+      console.error("Error starting media devices:", err);
+      setError("Failed to access camera/microphone. Please grant permissions.");
+    }
+  };
+  const handleToggleMic = () => {
+    const newState = !isMicEnabled;
+    setIsMicEnabled(newState);
+    webrtcService.toggleMicrophone(newState);
+  };
+  const handleToggleCamera = () => {
+    const newState = !isCameraEnabled;
+    setIsCameraEnabled(newState);
+    webrtcService.toggleCamera(newState);
+  };
+  const handleToggleScreenShare = async () => {
+    if (isScreenSharing) {
+      webrtcService.stopScreenShare();
+      if (screenStreamRef.current) {
+        screenStreamRef.current.getTracks().forEach((track) => track.stop());
+        screenStreamRef.current = null;
+      }
+      setIsScreenSharing(false);
+    } else {
+      try {
+        const stream = await webrtcService.startScreenShare();
+        screenStreamRef.current = stream;
+        setIsScreenSharing(true);
+        stream.getVideoTracks()[0].onended = () => {
+          setIsScreenSharing(false);
+          screenStreamRef.current = null;
+        };
+      } catch (err) {
+        console.error("Error starting screen share:", err);
+        setError("Failed to start screen sharing.");
+      }
+    }
+  };
+  const handleLeaveRoom = () => {
+    if (localStream) {
+      localStream.getTracks().forEach((track) => track.stop());
+    }
+    if (screenStreamRef.current) {
+      screenStreamRef.current.getTracks().forEach((track) => track.stop());
+    }
+    onLeaveRoom();
+  };
+  const participantsList = Array.from(participants.values());
+  return /* @__PURE__ */ jsxDEV("div", { className: "call-interface", children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "call-header", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "room-info", children: [
+        /* @__PURE__ */ jsxDEV("h2", { children: [
+          "Room: ",
+          webrtcService.roomId
+        ] }, void 0, true, {
+          fileName: "F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx",
+          lineNumber: 95,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("span", { className: "participant-count", children: [
+          participantsList.length + 1,
+          " participant",
+          participantsList.length !== 0 ? "s" : ""
+        ] }, void 0, true, {
+          fileName: "F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx",
+          lineNumber: 96,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx",
+        lineNumber: 94,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "protection-status", children: /* @__PURE__ */ jsxDEV("span", { className: "protection-badge", children: "🔒 Protection: Web Mode" }, void 0, false, {
+        fileName: "F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx",
+        lineNumber: 101,
+        columnNumber: 11
+      }, this) }, void 0, false, {
+        fileName: "F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx",
+        lineNumber: 100,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx",
+      lineNumber: 93,
+      columnNumber: 7
+    }, this),
+    error && /* @__PURE__ */ jsxDEV("div", { className: "error-banner", children: error }, void 0, false, {
+      fileName: "F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx",
+      lineNumber: 106,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "video-grid", children: [
+      /* @__PURE__ */ jsxDEV(
+        VideoTile,
+        {
+          stream: localStream,
+          username: webrtcService.username || "You",
+          isLocal: true,
+          isMuted: !isMicEnabled,
+          isCameraOff: !isCameraEnabled
+        },
+        void 0,
+        false,
+        {
+          fileName: "F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx",
+          lineNumber: 112,
+          columnNumber: 9
+        },
+        this
+      ),
+      participantsList.map(
+        (participant) => /* @__PURE__ */ jsxDEV(
+          VideoTile,
+          {
+            stream: participant.stream,
+            username: participant.username,
+            isLocal: false
+          },
+          participant.id,
+          false,
+          {
+            fileName: "F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx",
+            lineNumber: 121,
+            columnNumber: 9
+          },
+          this
+        )
+      )
+    ] }, void 0, true, {
+      fileName: "F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx",
+      lineNumber: 111,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV(
+      ControlBar,
+      {
+        isMicEnabled,
+        isCameraEnabled,
+        isScreenSharing,
+        onToggleMic: handleToggleMic,
+        onToggleCamera: handleToggleCamera,
+        onToggleScreenShare: handleToggleScreenShare,
+        onLeaveRoom: handleLeaveRoom
+      },
+      void 0,
+      false,
+      {
+        fileName: "F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx",
+        lineNumber: 130,
+        columnNumber: 7
+      },
+      this
+    )
+  ] }, void 0, true, {
+    fileName: "F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx",
+    lineNumber: 92,
+    columnNumber: 5
+  }, this);
+}
+_s(CallInterface, "Vi7ZLF2N08qmp5oeNM1SaefHYRY=");
+_c = CallInterface;
+export default CallInterface;
+var _c;
+$RefreshReg$(_c, "CallInterface");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "F:/ProtectedRTCClient/ProtectedRTCClient/web-client/src/components/CallInterface.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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VXdCLFlBQVlGO0FBQUFBLFlBQ3RCLFNBQVM7QUFBQTtBQUFBLFVBSEpFLFlBQVlDO0FBQUFBLFVBRG5CO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsUUFJaUI7QUFBQSxNQUVsQjtBQUFBLFNBaEJIO0FBQUE7QUFBQTtBQUFBO0FBQUEsV0FpQkE7QUFBQSxJQUVBO0FBQUEsTUFBQztBQUFBO0FBQUEsUUFDQztBQUFBLFFBQ0E7QUFBQSxRQUNBO0FBQUEsUUFDQSxhQUFhckI7QUFBQUEsUUFDYixnQkFBZ0JHO0FBQUFBLFFBQ2hCLHFCQUFxQkU7QUFBQUEsUUFDckIsYUFBYU07QUFBQUE7QUFBQUEsTUFQZjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsSUFPK0I7QUFBQSxPQTdDakM7QUFBQTtBQUFBO0FBQUE7QUFBQSxTQStDQTtBQUVKO0FBQUNoQyxHQWhJUUosZUFBYTtBQUFBK0MsS0FBYi9DO0FBa0lULGVBQWVBO0FBQWMsSUFBQStDO0FBQUFDLGFBQUFELElBQUEiLCJuYW1lcyI6WyJ1c2VTdGF0ZSIsInVzZUVmZmVjdCIsInVzZVJlZiIsIldlYlJUQ1NlcnZpY2UiLCJWaWRlb1RpbGUiLCJDb250cm9sQmFyIiwiQ2FsbEludGVyZmFjZSIsIndlYnJ0Y1NlcnZpY2UiLCJwYXJ0aWNpcGFudHMiLCJvbkxlYXZlUm9vbSIsIl9zIiwibG9jYWxTdHJlYW0iLCJzZXRMb2NhbFN0cmVhbSIsImlzTWljRW5hYmxlZCIsInNldElzTWljRW5hYmxlZCIsImlzQ2FtZXJhRW5hYmxlZCIsInNldElzQ2FtZXJhRW5hYmxlZCIsImlzU2NyZWVuU2hhcmluZyIsInNldElzU2NyZWVuU2hhcmluZyIsImVycm9yIiwic2V0RXJyb3IiLCJzY3JlZW5TdHJlYW1SZWYiLCJzdGFydE1lZGlhRGV2aWNlcyIsImdldFRyYWNrcyIsImZvckVhY2giLCJ0cmFjayIsInN0b3AiLCJzdHJlYW0iLCJzdGFydENhbWVyYSIsImVyciIsImNvbnNvbGUiLCJoYW5kbGVUb2dnbGVNaWMiLCJuZXdTdGF0ZSIsInRvZ2dsZU1pY3JvcGhvbmUiLCJoYW5kbGVUb2dnbGVDYW1lcmEiLCJ0b2dnbGVDYW1lcmEiLCJoYW5kbGVUb2dnbGVTY3JlZW5TaGFyZSIsInN0b3BTY3JlZW5TaGFyZSIsImN1cnJlbnQiLCJzdGFydFNjcmVlblNoYXJlIiwiZ2V0VmlkZW9UcmFja3MiLCJvbmVuZGVkIiwiaGFuZGxlTGVhdmVSb29tIiwicGFydGljaXBhbnRzTGlzdCIsIkFycmF5IiwiZnJvbSIsInZhbHVlcyIsInJvb21JZCIsImxlbmd0aCIsInVzZXJuYW1lIiwibWFwIiwicGFydGljaXBhbnQiLCJpZCIsIl9jIiwiJFJlZnJlc2hSZWckIl0sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIkNhbGxJbnRlcmZhY2UudHN4Il0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHVzZVN0YXRlLCB1c2VFZmZlY3QsIHVzZVJlZiB9IGZyb20gJ3JlYWN0JztcbmltcG9ydCB7IFdlYlJUQ1NlcnZpY2UsIHR5cGUgUGFydGljaXBhbnQgfSBmcm9tICcuLi9zZXJ2aWNlcy9XZWJSVENTZXJ2aWNlJztcbmltcG9ydCBWaWRlb1RpbGUgZnJvbSAnLi9WaWRlb1RpbGUnO1xuaW1wb3J0IENvbnRyb2xCYXIgZnJvbSAnLi9Db250cm9sQmFyJztcbmltcG9ydCAnLi9DYWxsSW50ZXJmYWNlLmNzcyc7XG5cbmludGVyZmFjZSBDYWxsSW50ZXJmYWNlUHJvcHMge1xuICB3ZWJydGNTZXJ2aWNlOiBXZWJSVENTZXJ2aWNlO1xuICBwYXJ0aWNpcGFudHM6IE1hcDxzdHJpbmcsIFBhcnRpY2lwYW50PjtcbiAgb25MZWF2ZVJvb206ICgpID0+IHZvaWQ7XG59XG5cbmZ1bmN0aW9uIENhbGxJbnRlcmZhY2UoeyB3ZWJydGNTZXJ2aWNlLCBwYXJ0aWNpcGFudHMsIG9uTGVhdmVSb29tIH06IENhbGxJbnRlcmZhY2VQcm9wcykge1xuICBjb25zdCBbbG9jYWxTdHJlYW0sIHNldExvY2FsU3RyZWFtXSA9IHVzZVN0YXRlPE1lZGlhU3RyZWFtIHwgbnVsbD4obnVsbCk7XG4gIGNvbnN0IFtpc01pY0VuYWJsZWQsIHNldElzTWljRW5hYmxlZF0gPSB1c2VTdGF0ZSh0cnVlKTtcbiAgY29uc3QgW2lzQ2FtZXJhRW5hYmxlZCwgc2V0SXNDYW1lcmFFbmFibGVkXSA9IHVzZVN0YXRlKHRydWUpO1xuICBjb25zdCBbaXNTY3JlZW5TaGFyaW5nLCBzZXRJc1NjcmVlblNoYXJpbmddID0gdXNlU3RhdGUoZmFsc2UpO1xuICBjb25zdCBbZXJyb3IsIHNldEVycm9yXSA9IHVzZVN0YXRlPHN0cmluZyB8IG51bGw+KG51bGwpO1xuICBjb25zdCBzY3JlZW5TdHJlYW1SZWYgPSB1c2VSZWY8TWVkaWFTdHJlYW0gfCBudWxsPihudWxsKTtcblxuICB1c2VFZmZlY3QoKCkgPT4ge1xuICAgIHN0YXJ0TWVkaWFEZXZpY2VzKCk7XG4gICAgXG4gICAgcmV0dXJuICgpID0+IHtcbiAgICAgIGlmIChsb2NhbFN0cmVhbSkge1xuICAgICAgICBsb2NhbFN0cmVhbS5nZXRUcmFja3MoKS5mb3JFYWNoKHRyYWNrID0+IHRyYWNrLnN0b3AoKSk7XG4gICAgICB9XG4gICAgfTtcbiAgfSwgW10pO1xuXG4gIGNvbnN0IHN0YXJ0TWVkaWFEZXZpY2VzID0gYXN5bmMgKCkgPT4ge1xuICAgIHRyeSB7XG4gICAgICBjb25zdCBzdHJlYW0gPSBhd2FpdCB3ZWJydGNTZXJ2aWNlLnN0YXJ0Q2FtZXJhKCk7XG4gICAgICBzZXRMb2NhbFN0cmVhbShzdHJlYW0pO1xuICAgICAgc2V0RXJyb3IobnVsbCk7XG4gICAgfSBjYXRjaCAoZXJyKSB7XG4gICAgICBjb25zb2xlLmVycm9yKCdFcnJvciBzdGFydGluZyBtZWRpYSBkZXZpY2VzOicsIGVycik7XG4gICAgICBzZXRFcnJvcignRmFpbGVkIHRvIGFjY2VzcyBjYW1lcmEvbWljcm9waG9uZS4gUGxlYXNlIGdyYW50IHBlcm1pc3Npb25zLicpO1xuICAgIH1cbiAgfTtcblxuICBjb25zdCBoYW5kbGVUb2dnbGVNaWMgPSAoKSA9PiB7XG4gICAgY29uc3QgbmV3U3RhdGUgPSAhaXNNaWNFbmFibGVkO1xuICAgIHNldElzTWljRW5hYmxlZChuZXdTdGF0ZSk7XG4gICAgd2VicnRjU2VydmljZS50b2dnbGVNaWNyb3Bob25lKG5ld1N0YXRlKTtcbiAgfTtcblxuICBjb25zdCBoYW5kbGVUb2dnbGVDYW1lcmEgPSAoKSA9PiB7XG4gICAgY29uc3QgbmV3U3RhdGUgPSAhaXNDYW1lcmFFbmFibGVkO1xuICAgIHNldElzQ2FtZXJhRW5hYmxlZChuZXdTdGF0ZSk7XG4gICAgd2VicnRjU2VydmljZS50b2dnbGVDYW1lcmEobmV3U3RhdGUpO1xuICB9O1xuXG4gIGNvbnN0IGhhbmRsZVRvZ2dsZVNjcmVlblNoYXJlID0gYXN5bmMgKCkgPT4ge1xuICAgIGlmIChpc1NjcmVlblNoYXJpbmcpIHtcbiAgICAgIHdlYnJ0Y1NlcnZpY2Uuc3RvcFNjcmVlblNoYXJlKCk7XG4gICAgICBpZiAoc2NyZWVuU3RyZWFtUmVmLmN1cnJlbnQpIHtcbiAgICAgICAgc2NyZWVuU3RyZWFtUmVmLmN1cnJlbnQuZ2V0VHJhY2tzKCkuZm9yRWFjaCh0cmFjayA9PiB0cmFjay5zdG9wKCkpO1xuICAgICAgICBzY3JlZW5TdHJlYW1SZWYuY3VycmVudCA9IG51bGw7XG4gICAgICB9XG4gICAgICBzZXRJc1NjcmVlblNoYXJpbmcoZmFsc2UpO1xuICAgIH0gZWxzZSB7XG4gICAgICB0cnkge1xuICAgICAgICBjb25zdCBzdHJlYW0gPSBhd2FpdCB3ZWJydGNTZXJ2aWNlLnN0YXJ0U2NyZWVuU2hhcmUoKTtcbiAgICAgICAgc2NyZWVuU3RyZWFtUmVmLmN1cnJlbnQgPSBzdHJlYW07XG4gICAgICAgIHNldElzU2NyZWVuU2hhcmluZyh0cnVlKTtcbiAgICAgICAgXG4gICAgICAgIHN0cmVhbS5nZXRWaWRlb1RyYWNrcygpWzBdLm9uZW5kZWQgPSAoKSA9PiB7XG4gICAgICAgICAgc2V0SXNTY3JlZW5TaGFyaW5nKGZhbHNlKTtcbiAgICAgICAgICBzY3JlZW5TdHJlYW1SZWYuY3VycmVudCA9IG51bGw7XG4gICAgICAgIH07XG4gICAgICB9IGNhdGNoIChlcnIpIHtcbiAgICAgICAgY29uc29sZS5lcnJvcignRXJyb3Igc3RhcnRpbmcgc2NyZWVuIHNoYXJlOicsIGVycik7XG4gICAgICAgIHNldEVycm9yKCdGYWlsZWQgdG8gc3RhcnQgc2NyZWVuIHNoYXJpbmcuJyk7XG4gICAgICB9XG4gICAgfVxuICB9O1xuXG4gIGNvbnN0IGhhbmRsZUxlYXZlUm9vbSA9ICgpID0+IHtcbiAgICBpZiAobG9jYWxTdHJlYW0pIHtcbiAgICAgIGxvY2FsU3RyZWFtLmdldFRyYWNrcygpLmZvckVhY2godHJhY2sgPT4gdHJhY2suc3RvcCgpKTtcbiAgICB9XG4gICAgaWYgKHNjcmVlblN0cmVhbVJlZi5jdXJyZW50KSB7XG4gICAgICBzY3JlZW5TdHJlYW1SZWYuY3VycmVudC5nZXRUcmFja3MoKS5mb3JFYWNoKHRyYWNrID0+IHRyYWNrLnN0b3AoKSk7XG4gICAgfVxuICAgIG9uTGVhdmVSb29tKCk7XG4gIH07XG5cbiAgY29uc3QgcGFydGljaXBhbnRzTGlzdCA9IEFycmF5LmZyb20ocGFydGljaXBhbnRzLnZhbHVlcygpKTtcblxuICByZXR1cm4gKFxuICAgIDxkaXYgY2xhc3NOYW1lPVwiY2FsbC1pbnRlcmZhY2VcIj5cbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwiY2FsbC1oZWFkZXJcIj5cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJyb29tLWluZm9cIj5cbiAgICAgICAgICA8aDI+Um9vbToge3dlYnJ0Y1NlcnZpY2Uucm9vbUlkfTwvaDI+XG4gICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwicGFydGljaXBhbnQtY291bnRcIj5cbiAgICAgICAgICAgIHtwYXJ0aWNpcGFudHNMaXN0Lmxlbmd0aCArIDF9IHBhcnRpY2lwYW50e3BhcnRpY2lwYW50c0xpc3QubGVuZ3RoICE9PSAwID8gJ3MnIDogJyd9XG4gICAgICAgICAgPC9zcGFuPlxuICAgICAgICA8L2Rpdj5cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJwcm90ZWN0aW9uLXN0YXR1c1wiPlxuICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cInByb3RlY3Rpb24tYmFkZ2VcIj7wn5SSIFByb3RlY3Rpb246IFdlYiBNb2RlPC9zcGFuPlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvZGl2PlxuXG4gICAgICB7ZXJyb3IgJiYgKFxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImVycm9yLWJhbm5lclwiPlxuICAgICAgICAgIHtlcnJvcn1cbiAgICAgICAgPC9kaXY+XG4gICAgICApfVxuXG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cInZpZGVvLWdyaWRcIj5cbiAgICAgICAgPFZpZGVvVGlsZVxuICAgICAgICAgIHN0cmVhbT17bG9jYWxTdHJlYW19XG4gICAgICAgICAgdXNlcm5hbWU9e3dlYnJ0Y1NlcnZpY2UudXNlcm5hbWUgfHwgJ1lvdSd9XG4gICAgICAgICAgaXNMb2NhbD17dHJ1ZX1cbiAgICAgICAgICBpc011dGVkPXshaXNNaWNFbmFibGVkfVxuICAgICAgICAgIGlzQ2FtZXJhT2ZmPXshaXNDYW1lcmFFbmFibGVkfVxuICAgICAgICAvPlxuICAgICAgICBcbiAgICAgICAge3BhcnRpY2lwYW50c0xpc3QubWFwKHBhcnRpY2lwYW50ID0+IChcbiAgICAgICAgICA8VmlkZW9UaWxlXG4gICAgICAgICAgICBrZXk9e3BhcnRpY2lwYW50LmlkfVxuICAgICAgICAgICAgc3RyZWFtPXtwYXJ0aWNpcGFudC5zdHJlYW19XG4gICAgICAgICAgICB1c2VybmFtZT17cGFydGljaXBhbnQudXNlcm5hbWV9XG4gICAgICAgICAgICBpc0xvY2FsPXtmYWxzZX1cbiAgICAgICAgICAvPlxuICAgICAgICApKX1cbiAgICAgIDwvZGl2PlxuXG4gICAgICA8Q29udHJvbEJhclxuICAgICAgICBpc01pY0VuYWJsZWQ9e2lzTWljRW5hYmxlZH1cbiAgICAgICAgaXNDYW1lcmFFbmFibGVkPXtpc0NhbWVyYUVuYWJsZWR9XG4gICAgICAgIGlzU2NyZWVuU2hhcmluZz17aXNTY3JlZW5TaGFyaW5nfVxuICAgICAgICBvblRvZ2dsZU1pYz17aGFuZGxlVG9nZ2xlTWljfVxuICAgICAgICBvblRvZ2dsZUNhbWVyYT17aGFuZGxlVG9nZ2xlQ2FtZXJhfVxuICAgICAgICBvblRvZ2dsZVNjcmVlblNoYXJlPXtoYW5kbGVUb2dnbGVTY3JlZW5TaGFyZX1cbiAgICAgICAgb25MZWF2ZVJvb209e2hhbmRsZUxlYXZlUm9vbX1cbiAgICAgIC8+XG4gICAgPC9kaXY+XG4gICk7XG59XG5cbmV4cG9ydCBkZWZhdWx0IENhbGxJbnRlcmZhY2U7XG4iXSwiZmlsZSI6IkY6L1Byb3RlY3RlZFJUQ0NsaWVudC9Qcm90ZWN0ZWRSVENDbGllbnQvd2ViLWNsaWVudC9zcmMvY29tcG9uZW50cy9DYWxsSW50ZXJmYWNlLnRzeCJ9

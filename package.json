@@ -1,0 +1,10 @@
+﻿{
+  "name": "protectedrtc",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node signaling-server/server.js"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "/1jiT7AOxV4=",
+  "success": true,
+  "projectFilePath": "F:\\ProtectedRTCClient\\ProtectedRTCClient\\signaling-server\\desktop-client\\desktop-client\\ProtectedRTC.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\rayya\\.nuget\\packages\\microsoft.web.webview2\\1.0.2592.51\\microsoft.web.webview2.1.0.2592.51.nupkg.sha512"
+  ],
+  "logs": []
+}

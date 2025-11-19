@@ -1,0 +1,13 @@
+cd F:\ProtectedRTCClient\ProtectedRTCClient\signaling-server
+npm install
+npm run dev
+
+
+cd F:\ProtectedRTCClient\ProtectedRTCClient\web-client
+npm install
+npm run dev
+
+
+cd F:\ProtectedRTCClient\ProtectedRTCClient\desktop-client
+dotnet restore
+dotnet run

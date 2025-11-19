@@ -1,0 +1,9 @@
+﻿services:
+  - type: web
+    name: screensharee-signaling
+    runtime: node
+    buildCommand: cd signaling-server && npm install
+    startCommand: cd signaling-server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
